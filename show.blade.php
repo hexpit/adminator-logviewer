@@ -110,34 +110,34 @@
                     <table id="entries" class="w-full">
                         <thead>
                         <tr class="bg-gray-500 dark:bg-gray-800 h-12 text-left">
-                            <th>@lang('ENV')</th>
+                            <th class="pl-2" style="width: 120px;">@lang('ENV')</th>
                             <th style="width: 120px;">@lang('Level')</th>
-                            <th style="width: 65px;">@lang('Time')</th>
+                            <th style="width: 120px;">@lang('Time')</th>
                             <th>@lang('Header')</th>
-                            <th class="text-right">@lang('Actions')</th>
+                            <th class="text-right" style="width: 120px;">@lang('Actions')</th>
                         </tr>
                         </thead>
                         <tbody>
                         @forelse($entries as $key => $entry)
                             <?php /** @var  Arcanedev\LogViewer\Entities\LogEntry  $entry */ ?>
                             <tr class="{{ $loop->index % 2 === 0 ? 'even' : 'odd' }}">
-                                <td>
-                                    <span class="env">{{ $entry->env }}</span>
+                                <td class="p-2">
+                                    <span class="env rounded px-2 py-0.5">{{ $entry->env }}</span>
                                 </td>
-                                <td>
-                                    <span class="level-{{ $entry->level }}">
+                                <td class="p-2">
+                                    <span class="level-{{ $entry->level }} rounded px-2 py-0.5">
                                         {!! $entry->level() !!}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="p-2">
                                     <span class="secondary">
                                         {{ $entry->datetime->format('H:i:s') }}
                                     </span>
                                 </td>
-                                <td>
+                                <td class="p-2">
                                     {{ $entry->header }}
                                 </td>
-                                <td class="text-right">
+                                <td class="text-right p-2">
                                     @if ($entry->hasStack())
                                         <a class="btn btn-sm btn-light" role="button" data-toggle="collapse" href="#log-stack-{{ $key }}" aria-expanded="false" aria-controls="log-stack-{{ $key }}">
                                             <i class="fa fa-toggle-on"></i>
