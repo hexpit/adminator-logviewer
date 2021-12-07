@@ -9,7 +9,7 @@
 @extends('log-viewer::adminator._master')
 
 @push('logpage-title')
-    @lang('Log') [{{ $log->date }}]
+    @lang('Log Dated: ') [{{ \Carbon\Carbon::parse($log->date)->format('d/m/Y') }}]
 @endpush
 
 @section('log-content')
@@ -70,11 +70,11 @@
                         </td>
                         <td class="p-2">@lang('Created at') :</td>
                         <td class="p-2">
-                            <span class="bg-blue-600 rounded px-2 py-0.5">{{ $log->createdAt() }}</span>
+                            <span class="bg-blue-600 rounded px-2 py-0.5">{{ \Carbon\Carbon::parse($log->createdAt())->format('d/m/Y h:i:s A') }}</span>
                         </td>
                         <td class="p-2">@lang('Updated at') :</td>
                         <td class="p-2">
-                            <span class="bg-blue-600 rounded px-2 py-0.5">{{ $log->updatedAt() }}</span>
+                            <span class="bg-blue-600 rounded px-2 py-0.5">{{ \Carbon\Carbon::parse($log->updatedAt())->format('d/m/Y h:i:s A') }}</span>
                         </td>
                     </tr>
                     </tbody>

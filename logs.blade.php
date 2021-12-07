@@ -30,7 +30,7 @@
                 @foreach($row as $key => $value)
                     <td class="{{ $key == 'date' ? 'text-left' : 'text-center' }}">
                         @if ($key == 'date')
-                            <span>{{ $value }}</span>
+                            <span>{{ \Carbon\Carbon::parse($value)->format('d/m/Y') }}</span>
                         @elseif ($value == 0)
                             <span>{{ $value }}</span>
                         @else
