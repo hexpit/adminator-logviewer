@@ -13,16 +13,15 @@
                 <div class="overflow-x-auto">
                     <ul class="list-reset flex border-b dark:text-gray-900 text-sm md:text-base overscroll-x-contain" id="logTab" role="tablist">
                         <li class="mr-1">
-                            <a class="bg-white dark:bg-gray-700 dark:text-white inline-block py-2 px-2 md:px-4 rounded-t-lg {{ Route::is('log-viewer::dashboard') ? 'text-blue-dark border-l border-t border-r rounded-t font-semibold' : 'text-blue hover:text-blue-darker' }}" href="{{ route('log-viewer::dashboard') }}" role="tab" aria-controls="list" aria-selected="true">@lang('Log Stats')</a>
+                            <a class="bg-gray-200 dark:bg-gray-600 dark:text-white inline-block py-2 px-2 md:px-4 rounded-t-lg {{ Route::is('log-viewer::dashboard') ? 'text-blue-dark border-l border-t border-r rounded-t font-semibold' : 'text-blue hover:text-blue-darker' }}" href="{{ route('log-viewer::dashboard') }}" role="tab" aria-controls="list" aria-selected="true">@lang('Log Stats')</a>
                         </li>
                         <li class="mr-1">
-                            <a class="bg-white dark:bg-gray-700 dark:text-white inline-block py-2 px-2 md:px-4 rounded-t-lg {{ Route::is('log-viewer::logs.list') || Route::is('log-viewer::logs.show') ? 'text-blue-dark border-l border-t border-r rounded-t font-semibold' : 'text-blue hover:text-blue-darker' }}" href="{{ route('log-viewer::logs.list') }}" role="tab" aria-controls="cards" aria-selected="true">@lang('Log Viewer')</a>
+                            <a class="bg-gray-200 dark:bg-gray-600 dark:text-white inline-block py-2 px-2 md:px-4 rounded-t-lg {{ Route::is('log-viewer::logs.list') || Route::is('log-viewer::logs.show') ? 'text-blue-dark border-l border-t border-r rounded-t font-semibold' : 'text-blue hover:text-blue-darker' }}" href="{{ route('log-viewer::logs.list') }}" role="tab" aria-controls="cards" aria-selected="true">@lang('Log Viewer')</a>
                         </li>
                     </ul>
                 </div>
             </div>
             @yield('log-content')
-            @yield('log-modals')
         </x-slot>
     </x-backend.card>
 @endsection

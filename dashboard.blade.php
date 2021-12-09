@@ -43,7 +43,7 @@
                 data: {!! $chartData !!},
                 options: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
                     }
                 }
             });
