@@ -13,25 +13,31 @@
 @endpush
 
 @section('log-content')
-    <div class="grid grid-cols-7">
-        <div class="col-span-1">
+    <div class="grid grid-cols-1 xl:grid-cols-7 gap-x-5">
+        <div class="xl:col-span-1">
             {{-- Log Menu --}}
             <div>
-                <div>@lang('Levels')</div>
+                <h3 class="bg-gray-600 rounded-t px-5 py-3 text-lg font-black">@lang('Levels')</div>
                 <div class="">
                     @foreach($log->menu() as $levelKey => $item)
                         @if ($item['count'] === 0)
                             <div>
-                                <a class="">
-                                    <span>{!! $item['icon'] !!} {{ $item['name'] }}</span>
-                                    <span class="empty">{{ $item['count'] }}</span>
-                                </a>
+                                <div class="flex justify-between px-5 py-3">
+                                    <span class="level-{{ $levelKey }} flex items-center">
+                                        <span> @include('log-viewer::adminator.icon-maker', ['icon' => $item['name'], 'size' => 6])</span>
+                                        <span>{{ $item['name'] }}</span>
+                                    </span>
+                                    <span class="empty rounded-full p-1">{{ $item['count'] }}</span>
+                                </div>
                             </div>
                         @else
                             <div>
-                                <a href="{{ $item['url'] }}" class="level-{{ $levelKey }} {{ $level === $levelKey ? ' active' : ''}}">
-                                    <span>{!! $item['icon'] !!} {{ $item['name'] }}</span>
-                                    <span class="level-{{ $levelKey }}">{{ $item['count'] }}</span>
+                                <a href="{{ $item['url'] }}" class="flex justify-between">
+                                    <span class="level-{{ $levelKey }} {{ $level === $levelKey ? ' active' : ''}} flex items-center">
+                                         <span> @include('log-viewer::adminator.icon-maker', ['icon' => $item['name'], 'size' => 6])</span>
+                                         <span>{{ $item['name'] }}</span>
+                                    </span>
+                                    <span class="level-{{ $levelKey }} rounded-full p-1">{{ $item['count'] }}</span>
                                 </a>
                             </div>
                         @endif
@@ -39,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-span-6">
+        <div class="xl:col-span-6">
             {{-- Log Details --}}
             <div class="my-5">
                 <div class="bg-gray-200 dark:bg-gray-800 flex justify-between px-5 py-3">
@@ -184,7 +190,6 @@
 
             {!! $entries->appends(compact('query'))->render() !!}
         </div>
-    </div>
 @endsection
 
 @push('after-logscripts')

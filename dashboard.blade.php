@@ -5,15 +5,15 @@
 @endpush
 
 @section('log-content')
-    <div class="grid grid-cols-4 gap-5 p-5">
-        <div class="col-span-1">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-5 p-5">
+        <div class="xl:col-span-1">
             <canvas id="stats-doughnut-chart" height="300"></canvas>
         </div>
 
-        <div class="col-span-3">
-            <div class="grid grid-cols-3 gap-5">
+        <div class="xl:col-span-3">
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
                 @foreach($percents as $level => $item)
-                    <div class=" flex items-center rounded p-2 level-{{ $level }} ">
+                    <div class="flex items-center rounded p-2 level-{{ $level }} ">
                         <div class="border-r pr-1">
                             @include('log-viewer::adminator.icon-maker', ['icon' => $level, 'size' => 12])
                         </div>
@@ -44,6 +44,9 @@
                 options: {
                     legend: {
                         position: 'bottom',
+                        labels: {
+                             fontColor: "black",
+                        },
                     }
                 }
             });
