@@ -17,7 +17,7 @@
                            <span>{{ $header }}</span>
                        @else
                            <span class="level-{{ $key }} px-2 rounded inline-flex items-center">
-                            @include('log-viewer::adminator.icon-maker', ['icon' => $key, 'size' => 5]) {{ $header }}
+                            @include('log-viewer::adminator.icon-maker', ['icon' => $key, 'size' => 5]) <span class="ml-1">{{ $header }}</span>
                         </span>
                        @endif
                    </th>
