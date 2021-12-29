@@ -216,7 +216,7 @@
                 </div>
             </div>
 
-            {!! $entries->appends(compact('query'))->render() !!}
+            {!! $entries->appends(compact('query'))->links('vendor.pagination.tailwind') !!}
         </div>
     </div>
 @endsection
