@@ -56,12 +56,17 @@
                             </svg>
                             <span class="ml-1">@lang('Download')</span>
                         </a>
-                        <a href="#delete-log-modal" class="flex items-center rounded bg-red-500 px-2 py-0.5">
-                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-                                <path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"></path>
-                            </svg>
-                            <span class="ml-1"></span>@lang('Delete')</span>
-                        </a>
+                        <form id="deleteLogForm" method="POST" action="{{ route('log-viewer::logs.delete') }}">
+                            @method('DELETE')
+                            @csrf
+                            <input type="hidden" name="date">
+                            <button type="submit" class="flex items-center rounded bg-red-500 px-2 py-0.5">
+                                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                    <path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"></path>
+                                </svg>
+                                <span class="ml-1"></span>@lang('Delete')</span>
+                            </button>
+                        </form>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 overflow-x-auto">
@@ -99,12 +104,17 @@
                             <input id="query" name="query" class="form-control" value="{{ $query }}" placeholder="@lang('Type here to search')">
                             <div class="flex">
                                 @unless (is_null($query))
-                                    <a href="{{ route('log-viewer::logs.show', [$log->date]) }}" class="btn btn-secondary">
-                                        (@lang(':count results', ['count' => $entries->count()])) <i class="fa fa-fw fa-times"></i>
+                                    <a href="{{ route('log-viewer::logs.show', [$log->date]) }}" class="flex bg-gray-500 items-center">
+                                        (@lang(':count results', ['count' => $entries->count()]))
+                                        <svg class="w-5 h-5" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                                            <path d="M4.5 4.5l6 6m-6 0l6-6" stroke="currentColor"></path>
+                                        </svg>
                                     </a>
                                 @endunless
-                                <button id="search-btn" class="btn btn-primary">
-                                    <span class="fa fa-fw fa-search"></span>
+                                <button id="search-btn" class="bg-blue-500 p-2">
+                                    <svg class="w-5 h-5" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                                        <path d="M416 448L319 351Q277 383 224 383 181 383 144 362 107 340 86 303 64 266 64 223 64 180 86 143 107 106 144 85 181 63 224 63 267 63 304 85 341 106 363 143 384 180 384 223 384 277 351 319L448 416 416 448ZM223 336Q270 336 303 303 335 270 335 224 335 177 303 145 270 112 223 112 177 112 144 145 111 177 111 224 111 270 144 303 177 336 223 336Z"></path>
+                                    </svg>
                                 </button>
                             </div>
                         </div>
@@ -138,8 +148,9 @@
                                     <span class="env rounded px-2 py-0.5">{{ $entry->env }}</span>
                                 </td>
                                 <td class="p-2">
-                                    <span class="level-{{ $entry->level }} rounded px-2 py-0.5">
-                                        {!! $entry->level() !!}
+                                    <span class="level-{{ $entry->level }} rounded px-2 py-0.5 flex items-center">
+                                        @include('log-viewer::adminator.icon-maker', ['icon' => $entry->level, 'size' => 5])
+                                        <span class="pl-1">{{ $entry->level }}</span>
                                     </span>
                                 </td>
                                 <td class="p-2">
@@ -246,9 +257,6 @@
                     }
                 });
             });
-
-
-
 
             @unless (empty(log_styler()->toHighlight()))
                 @php
