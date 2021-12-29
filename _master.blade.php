@@ -87,5 +87,11 @@
         #entries {
             overflow-wrap: anywhere;
         }
+        .stack-content {
+            color: #AE0E0E;
+            font-family: consolas, Menlo, Courier, monospace;
+            white-space: pre-line;
+            font-size: .8rem;
+        }
     </style>
 @endpush

@@ -133,7 +133,7 @@
                         <tbody x-data="{ showStack: false, showContent: false }">
                         @forelse($entries as $key => $entry)
                             <?php /** @var  Arcanedev\LogViewer\Entities\LogEntry  $entry */ ?>
-                            <tr class="{{ $loop->index % 2 === 0 ? 'even' : 'odd' }}">
+                            <tr class="border {{ $loop->index % 2 === 0 ? 'even' : 'odd' }}">
                                 <td class="p-2">
                                     <span class="env rounded px-2 py-0.5">{{ $entry->env }}</span>
                                 </td>
@@ -153,8 +153,11 @@
                                 <td class="text-right p-2">
                                     @if ($entry->hasStack())
                                         <a class="flex items-center" role="button" href="#log-stack-{{ $key }}" aria-expanded="false" aria-controls="log-stack-{{ $key }}" @click.prevent="showStack = !showStack">
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showStack">
                                                 <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
+                                            </svg>
+                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showStack">
+                                                <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
                                             </svg>
                                             <span class="ml-1">@lang('Stack')</span>
                                         </a>
@@ -162,8 +165,11 @@
 
                                     @if ($entry->hasContext())
                                         <a class="flex items-center" role="button" href="#log-context-{{ $key }}" aria-expanded="false" aria-controls="log-context-{{ $key }}" @click.prevent="showContent = !showContent">
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showContent">
                                                 <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
+                                            </svg>
+                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showContent">
+                                                <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
                                             </svg>
                                             <span class="ml-1">@lang('Context')</span>
                                         </a>
@@ -171,16 +177,16 @@
                                 </td>
                             </tr>
                             @if ($entry->hasStack() || $entry->hasContext())
-                                <tr>
+                                <tr class="border bg-gray-300">
                                     <td colspan="5" class="stack py-0">
                                         @if ($entry->hasStack())
-                                            <div class="stack-content" id="log-stack-{{ $key }}" x-show="showStack">
+                                            <div class="stack-content p-5" id="log-stack-{{ $key }}" x-show="showStack">
                                                 {!! $entry->stack() !!}
                                             </div>
                                         @endif
 
                                         @if ($entry->hasContext())
-                                            <div class="stack-content" id="log-context-{{ $key }}" x-show="showContent">
+                                            <div class="stack-content p-5" id="log-context-{{ $key }}" x-show="showContent">
                                                 <pre>{{ $entry->context() }}</pre>
                                             </div>
                                         @endif
