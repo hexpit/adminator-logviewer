@@ -23,7 +23,7 @@
                         @if ($item['count'] === 0)
                             <div>
                                 <div class="flex justify-between 2xl:px-5 py-3 border">
-                                    <span class="level-{{ $levelKey }} flex items-center rounded-full px-2 py-0.5">
+                                    <span class="level-{{ $levelKey }} flex items-center rounded px-2 py-0.5">
                                         <span>@include('log-viewer::adminator.icon-maker', ['icon' => $levelKey, 'size' => 6])</span>
                                         <span class="ml-1">{{ $item['name'] }}</span>
                                     </span>
@@ -33,7 +33,7 @@
                         @else
                             <div>
                                 <a href="{{ $item['url'] }}" class="flex justify-between 2xl:px-5 py-3 border">
-                                    <span class="level-{{ $levelKey }} {{ $level === $levelKey ? ' active' : ''}} flex items-center rounded-full px-2 py-0.5">
+                                    <span class="level-{{ $levelKey }} {{ $level === $levelKey ? ' active' : ''}} flex items-center rounded px-2 py-0.5">
                                          <span>@include('log-viewer::adminator.icon-maker', ['icon' => $levelKey, 'size' => 6])</span>
                                          <span class="ml-1">{{ $item['name'] }}</span>
                                     </span>
@@ -59,8 +59,8 @@
                         <form id="deleteLogForm" method="POST" action="{{ route('log-viewer::logs.delete') }}">
                             @method('DELETE')
                             @csrf
-                            <input type="hidden" name="date">
-                            <button type="submit" class="flex items-center rounded bg-red-500 px-2 py-0.5">
+                            <input type="hidden" name="date" value="{{ $log->date }}">
+                            <button type="submit" class="flex items-center rounded bg-red-500 px-2 py-0.5" @click.prevent="deleteConfirm($el)">
                                 <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                                     <path d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"></path>
                                 </svg>
@@ -83,15 +83,15 @@
                             </td>
                             <td class="p-2">@lang('Size') :</td>
                             <td class="p-2">
-                                <span class="bg-blue-600 rounded px-2 py-0.5">{{ $log->size() }}</span>
+                                <span class="bg-blue-600 rounded px-2 py-0.5 flex-nowrap inline-flex">{{ $log->size() }}</span>
                             </td>
                             <td class="p-2">@lang('Created at') :</td>
                             <td class="p-2">
-                                <span class="bg-blue-600 rounded px-2 py-0.5">{{ \Carbon\Carbon::parse($log->createdAt())->format('d/m/Y h:i:s A') }}</span>
+                                <span class="bg-blue-600 rounded px-2 py-0.5 flex-nowrap inline-flex">{{ \Carbon\Carbon::parse($log->createdAt())->format('d/m/Y h:i:s A') }}</span>
                             </td>
                             <td class="p-2">@lang('Updated at') :</td>
                             <td class="p-2">
-                                <span class="bg-blue-600 rounded px-2 py-0.5">{{ \Carbon\Carbon::parse($log->updatedAt())->format('d/m/Y h:i:s A') }}</span>
+                                <span class="bg-blue-600 rounded px-2 py-0.5 flex-nowrap inline-flex">{{ \Carbon\Carbon::parse($log->updatedAt())->format('d/m/Y h:i:s A') }}</span>
                             </td>
                         </tr>
                         </tbody>
@@ -101,11 +101,11 @@
                     {{-- Search --}}
                     <form action="{{ route('log-viewer::logs.search', [$log->date, $level]) }}" method="GET">
                         <div class="flex py-3 px-5">
-                            <input id="query" name="query" class="form-control" value="{{ $query }}" placeholder="@lang('Type here to search')">
+                            <input id="query" name="query" class="text-black dark:text-white dark:bg-gray-700 px-5 py-2 w-full" value="{{ $query }}" placeholder="@lang('Type here to search')">
                             <div class="flex">
                                 @unless (is_null($query))
-                                    <a href="{{ route('log-viewer::logs.show', [$log->date]) }}" class="flex bg-gray-500 items-center">
-                                        (@lang(':count results', ['count' => $entries->count()]))
+                                    <a href="{{ route('log-viewer::logs.show', [$log->date]) }}" class="flex bg-gray-500 items-center flex-shrink-0">
+                                        <span>(@lang(':count results', ['count' => $entries->count()]))</span>
                                         <svg class="w-5 h-5" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                             <path d="M4.5 4.5l6 6m-6 0l6-6" stroke="currentColor"></path>
                                         </svg>
@@ -137,81 +137,83 @@
                                 <th style="width: 120px;">@lang('Level')</th>
                                 <th style="width: 120px;">@lang('Time')</th>
                                 <th>@lang('Header')</th>
-                                <th class="text-right" style="width: 120px;">@lang('Actions')</th>
+                                <th style="width: 120px;">@lang('Actions')</th>
                             </tr>
                         </thead>
-                        <tbody x-data="{ showStack: false, showContent: false }">
                         @forelse($entries as $key => $entry)
-                            <?php /** @var  Arcanedev\LogViewer\Entities\LogEntry  $entry */ ?>
-                            <tr class="border {{ $loop->index % 2 === 0 ? 'even' : 'odd' }}">
-                                <td class="p-2">
-                                    <span class="env rounded px-2 py-0.5">{{ $entry->env }}</span>
-                                </td>
-                                <td class="p-2">
-                                    <span class="level-{{ $entry->level }} rounded px-2 py-0.5 flex items-center">
-                                        @include('log-viewer::adminator.icon-maker', ['icon' => $entry->level, 'size' => 5])
-                                        <span class="pl-1">{{ $entry->level }}</span>
-                                    </span>
-                                </td>
-                                <td class="p-2">
-                                    <span class="secondary">
-                                        {{ $entry->datetime->format('H:i:s') }}
-                                    </span>
-                                </td>
-                                <td class="p-2">
-                                    {{ $entry->header }}
-                                </td>
-                                <td class="text-right p-2">
-                                    @if ($entry->hasStack())
-                                        <a class="flex items-center" role="button" href="#log-stack-{{ $key }}" aria-expanded="false" aria-controls="log-stack-{{ $key }}" @click.prevent="showStack = !showStack">
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showStack">
-                                                <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
-                                            </svg>
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showStack">
-                                                <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
-                                            </svg>
-                                            <span class="ml-1">@lang('Stack')</span>
-                                        </a>
-                                    @endif
-
-                                    @if ($entry->hasContext())
-                                        <a class="flex items-center" role="button" href="#log-context-{{ $key }}" aria-expanded="false" aria-controls="log-context-{{ $key }}" @click.prevent="showContent = !showContent">
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showContent">
-                                                <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
-                                            </svg>
-                                            <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showContent">
-                                                <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
-                                            </svg>
-                                            <span class="ml-1">@lang('Context')</span>
-                                        </a>
-                                    @endif
-                                </td>
-                            </tr>
-                            @if ($entry->hasStack() || $entry->hasContext())
-                                <tr class="border bg-gray-300">
-                                    <td colspan="5" class="stack py-0">
+                            <tbody x-data="{ showStack: false, showContent: false }">
+                                <?php /** @var  Arcanedev\LogViewer\Entities\LogEntry  $entry */ ?>
+                                <tr class="border {{ $loop->index % 2 === 0 ? 'even' : 'odd' }}">
+                                    <td class="p-2">
+                                        <span class="env rounded px-2 py-0.5">{{ $entry->env }}</span>
+                                    </td>
+                                    <td class="p-2">
+                                        <span class="level-{{ $entry->level }} rounded px-2 py-0.5 inline-flex items-center">
+                                            @include('log-viewer::adminator.icon-maker', ['icon' => $entry->level, 'size' => 4])
+                                            <span class="pl-1">{{ $entry->level }}</span>
+                                        </span>
+                                    </td>
+                                    <td class="p-2">
+                                        <span class="secondary">
+                                            {{ $entry->datetime->format('H:i:s') }}
+                                        </span>
+                                    </td>
+                                    <td class="p-2">
+                                        {{ $entry->header }}
+                                    </td>
+                                    <td class="text-right p-2">
                                         @if ($entry->hasStack())
-                                            <div class="stack-content p-5" id="log-stack-{{ $key }}" x-show="showStack">
-                                                {!! $entry->stack() !!}
-                                            </div>
+                                            <a class="flex items-center" role="button" href="#log-stack-{{ $key }}" aria-expanded="false" aria-controls="log-stack-{{ $key }}" @click.prevent="showStack = !showStack">
+                                                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showStack">
+                                                    <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
+                                                </svg>
+                                                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showStack">
+                                                    <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
+                                                </svg>
+                                                <span class="ml-1">@lang('Stack')</span>
+                                            </a>
                                         @endif
 
                                         @if ($entry->hasContext())
-                                            <div class="stack-content p-5" id="log-context-{{ $key }}" x-show="showContent">
-                                                <pre>{{ $entry->context() }}</pre>
-                                            </div>
+                                            <a class="flex items-center" role="button" href="#log-context-{{ $key }}" aria-expanded="false" aria-controls="log-context-{{ $key }}" @click.prevent="showContent = !showContent">
+                                                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="!showContent">
+                                                    <path d="M384 64H192C85.961 64 0 149.961 0 256s85.961 192 192 192h192c106.039 0 192-85.961 192-192S490.039 64 384 64zM64 256c0-70.741 57.249-128 128-128 70.741 0 128 57.249 128 128 0 70.741-57.249 128-128 128-70.741 0-128-57.249-128-128zm320 128h-48.905c65.217-72.858 65.236-183.12 0-256H384c70.741 0 128 57.249 128 128 0 70.74-57.249 128-128 128z"></path>
+                                                </svg>
+                                                <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" x-show="showContent">
+                                                    <path d="M384 64H192C86 64 0 150 0 256s86 192 192 192h192c106 0 192-86 192-192S490 64 384 64zm0 320c-70.8 0-128-57.3-128-128 0-70.8 57.3-128 128-128 70.8 0 128 57.3 128 128 0 70.8-57.3 128-128 128z"></path>
+                                                </svg>
+                                                <span class="ml-1">@lang('Context')</span>
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
-                            @endif
+                                @if ($entry->hasStack() || $entry->hasContext())
+                                    <tr class="border bg-gray-300">
+                                        <td colspan="5" class="stack py-0">
+                                            @if ($entry->hasStack())
+                                                <div class="stack-content p-5" id="log-stack-{{ $key }}" x-show="showStack">
+                                                    {!! $entry->stack() !!}
+                                                </div>
+                                            @endif
+
+                                            @if ($entry->hasContext())
+                                                <div class="stack-content p-5" id="log-context-{{ $key }}" x-show="showContent">
+                                                    <pre>{{ $entry->context() }}</pre>
+                                                </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endif
+                            </tbody>
                         @empty
-                            <tr>
-                                <td colspan="5" class="text-center">
-                                    <span class="badge badge-secondary">@lang('The list of logs is empty!')</span>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <span class="badge badge-secondary">@lang('The list of logs is empty!')</span>
+                                    </td>
+                                </tr>
+                            </tbody>
                         @endforelse
-                        </tbody>
                     </table>
                 </div>
             </div>
@@ -223,53 +225,49 @@
 
 @push('after-logscripts')
     <script>
-        $(function () {
-            var deleteLogForm  = $('#deleteLogForm');
-            deleteLogForm.on('submit', function(event) {
-                event.preventDefault();
-                Swal.fire({
-                    title: 'Are you sure you want to permanently delete this item?',
-                    showCancelButton: true,
-                    confirmButtonText: 'Confirm Permanent Delete',
-                    cancelButtonText: 'Cancel',
-                    icon: 'warning'
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            url:      $(this).attr('action'),
-                            type:     $(this).attr('method'),
-                            dataType: 'json',
-                            data:     $('#deleteLogForm').serialize(),
-                            success: function(data) {
-                                if (data.result === 'success') {
-                                    location.replace("{{ route('log-viewer::logs.list') }}");
-                                }
-                                else {
-                                    alert('OOPS ! This is a lack of coffee exception !')
-                                }
-                            },
-                            error: function(xhr, textStatus, errorThrown) {
-                                alert('AJAX ERROR ! Check the console !');
-                                console.error(errorThrown);
+        function deleteConfirm(element) {
+            Swal.fire({
+                title: 'Are you sure you want to permanently delete this item?',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm Permanent Delete',
+                cancelButtonText: 'Cancel',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url:      $(element).closest('form').attr('action'),
+                        type:     $(element).closest('form').attr('method'),
+                        dataType: 'json',
+                        data:     $(element).closest('form').serialize(),
+                        success: function(data) {
+                            if (data.result === 'success') {
+                                location.replace("{{ route('log-viewer::logs.list') }}");
                             }
-                        });
-                        return false;
-                    }
-                });
+                            else {
+                                alert('OOPS ! This is a lack of coffee exception !')
+                            }
+                        },
+                        error: function(xhr, textStatus, errorThrown) {
+                            alert('AJAX ERROR ! Check the console !');
+                            console.error(errorThrown);
+                        }
+                    });
+                    return false;
+                }
             });
-
+        }
+        $(function () {
             @unless (empty(log_styler()->toHighlight()))
-                @php
-                    $htmlHighlight = version_compare(PHP_VERSION, '7.4.0') >= 0
-                        ? join('|', log_styler()->toHighlight())
-                        : join(log_styler()->toHighlight(), '|');
-                @endphp
-                $('.stack-content').each(function() {
-                    var $this = $(this);
-                    var html = $this.html().trim()
-                        .replace(/({!! $htmlHighlight !!})/gm, '<strong>$1</strong>');
-                    $this.html(html);
-                });
+            @php
+                $htmlHighlight = version_compare(PHP_VERSION, '7.4.0') >= 0
+                    ? join('|', log_styler()->toHighlight())
+                    : join(log_styler()->toHighlight(), '|');
+            @endphp
+            $('.stack-content').each(function() {
+                var $this = $(this);
+                var html = $this.html().trim().replace(/({!! $htmlHighlight !!})/gm, '<strong>$1</strong>');
+                $this.html(html);
+            });
             @endunless
         });
     </script>
